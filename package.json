@@ -1,0 +1,26 @@
+{
+  "name": "syncstream",
+  "version": "0.1.0",
+  "description": "Synchonized stream processing util",
+  "main": "stream.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thanhpk/syncstream.git"
+  },
+  "keywords": [
+    "sync",
+    "stream"
+  ],
+  "author": "Pham Kieu Thanh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thanhpk/syncstream/issues"
+  },
+  "homepage": "https://github.com/thanhpk/syncstream#readme"
+}
