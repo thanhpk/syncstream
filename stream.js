@@ -44,9 +44,11 @@ exports.Stream = class {
 			
 			this.startNewPull(batchsize); 	// start new pull
 			cb(this.out, this.data); // give the dataout
-			
 		} else {
-			if (this.out) return;
+			if (this.out) {
+				cb(this.out, undefined);
+				return;
+			}
 			// stream must be pulling, then just wait for cb
 			this.streamdatacb = cb;
 			this.pullrequest = true;
@@ -96,66 +98,3 @@ exports.Stream = class {
 	}
 };
 
-exports.StreamNext = class {
-	next(batchsize, cb, initcb) {
-		var me = this;
-		if (me.out) return;
-		this.returnData = cb;
-		if (!me.init) {
-			me.init = true;
-			me.currenti = 0;
-			me.data = new Array(batchsize);
-			initcb();
-		}
-
-		if (me.ready) {
-			me.ready = false;
-			me.returnData(me.out, me.data);
-			if (me.out) return;
-			me.data = new Array(batchsize);
-			me.currenti = 0;
-			me.cont();
-		} else {
-			me.pullrequest = true;
-		}
-	}
-	
-	promise(batchsize, cb) {
-		var me = this;
-		var promise = new Promise(function(resolve, reject) {
-			me.cont = resolve;
-		});
-
-		cb(function(ele) {
-			me.data[me.currenti] = ele;
-			me.currenti++;
-			if (me.currenti == batchsize) {
-				if (me.pullrequest) {
-					me.pullrequest = false;
-					me.returnData(false, me.data);
-					me.data = new Array(batchsize);
-					me.currenti = 0;
-					me.cont();
-				} else {
-					me.ready = true;
-				}
-			} else {
-				me.cont();
-			}
-		});
-		return promise;
-	}
-
-	end() {
-		var me = this;
-		me.data.length = me.currenti;
-		me.out = true;
-		if (me.pullrequest) {
-			me.pullrequest = false;
-			me.ready = true;
-			me.returnData(true, me.data);
-		} else {
-			me.ready = true;
-		}
-	}
-};
